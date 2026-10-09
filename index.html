@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AmirAli Zare</title>
+  <title>WAVE Animation</title>
   <style>
     * {
       box-sizing: border-box;
@@ -32,17 +32,25 @@
       justify-content: space-between;
       width: 100%;
       height: 100%;
-      padding: 60px 20px 50px;
+      padding: 50px 20px 40px;
     }
 
     .top-section {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 60px;
+      gap: 50px;
       margin-auto: auto;
       flex: 1;
       justify-content: center;
+    }
+
+    /* بخش پروفایل و عنوان زیر آن */
+    .profile-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
 
     /* پروفایل دایره‌ای */
@@ -57,6 +65,17 @@
       background-size: cover;
       background-position: center;
       position: relative;
+    }
+
+    /* متن کوچک زیر پروفایل */
+    .profile-title {
+      color: #38bdf8;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.9;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
     }
 
     /* افکت متن WAVE */
@@ -80,7 +99,7 @@
       will-change: transform;
     }
 
-    /* متن پایین صفحه با رنگ و درخشش هماهنگ با WAVE */
+    /* متن پایین صفحه */
     .bottom-text {
       color: #38bdf8;
       font-size: 20px;
@@ -95,8 +114,11 @@
 
   <div class="container">
     <div class="top-section">
-      <!-- پروفایل دایره‌ای بالای متن -->
-      <div class="profile-avatar"></div>
+      <!-- بخش پروفایل همراه با عنوان کوچک Programmer -->
+      <div class="profile-container">
+        <div class="profile-avatar"></div>
+        <div class="profile-title">Programmer</div>
+      </div>
 
       <!-- متن موجی WAVE -->
       <div class="wave-container">
@@ -111,7 +133,7 @@
 
     <!-- متن پایین صفحه -->
     <div class="bottom-text">
-   𝐁𝐮𝐢𝐥𝐝𝐢𝐧𝐠 𝐭𝐡𝐞 𝐛𝐞𝐬𝐭 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 𝐨𝐟 𝐦𝐲𝐬𝐞𝐥𝐟
+      𝐁𝐮𝐢𝐥𝐝𝐢𝐧𝐠 𝐭𝐡𝐞 𝐛𝐞𝐬𝐭 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 𝐨𝐟 𝐦𝐲𝐬𝐞𝐥𝐟
     </div>
   </div>
 
