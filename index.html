@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WAVejnff</title>
+  <title>WAVE kirrn</title>
   <style>
     * {
       box-sizing: border-box;
@@ -25,7 +25,17 @@
       touch-action: none;
     }
 
-    /* صفحه ورود اولیه تمیز و بدون باگ */
+    /* انیمیشن لرزش ملایم برای مستطیل ورود */
+    @keyframes shakeEffect {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-3px, 3px) rotate(-0.5deg); }
+      40% { transform: translate(3px, -2px) rotate(0.5deg); }
+      60% { transform: translate(-2px, -25px) rotate(-0.3deg); }
+      80% { transform: translate(2px, 2px) rotate(0.3deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    /* صفحه ورود اولیه همراه با لرزش */
     #welcomeOverlay {
       position: fixed;
       top: 0;
@@ -40,6 +50,22 @@
       z-index: 9999;
       gap: 25px;
       cursor: pointer;
+    }
+
+    /* کانتینر داخلی که لرزش روی آن اعمال می‌شود */
+    .welcome-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+      animation: shakeEffect 0.6s infinite ease-in-out;
     }
 
     .enter-btn {
@@ -70,7 +96,6 @@
       justify-content: space-between;
       width: 100%;
       height: 100%;
-      /* افزایش بیشتر فاصله پایین برای بالاتر آوردن پلیر */
       padding: 30px 20px 75px;
     }
 
@@ -278,10 +303,12 @@
 </head>
 <body>
 
-  <!-- صفحه خوش‌آمدگویی سراسری -->
+  <!-- صفحه خوش‌آمدگویی سراسری با کادر لرزان -->
   <div id="welcomeOverlay" onclick="startSite()">
-    <div style="color: #38bdf8; font-size: 24px; font-weight: 900; text-shadow: 0 0 15px rgba(56,189,248,0.8); letter-spacing: 2px;">𝐈 𝐰𝐢𝐥𝐥 𝐬𝐮𝐜𝐜𝐞𝐞𝐝</div>
-    <button class="enter-btn">ورود به سایت</button>
+    <div class="welcome-card">
+      <div style="color: #38bdf8; font-size: 24px; font-weight: 900; text-shadow: 0 0 15px rgba(56,189,248,0.8); letter-spacing: 2px;">𝐈 𝐰𝐢𝐥𝐥 𝐬𝐮𝐜𝐜𝐞𝐞𝐝</div>
+      <button class="enter-btn">ورود به سایت</button>
+    </div>
   </div>
 
   <div class="container">
