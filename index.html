@@ -1,149 +1,137 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full w-full overflow-hidden select-none">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>WAVE Animation with Profile Picture</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
-    
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden !important;
-            touch-action: none;
-            background-color: #080c14;
-            user-select: none;
-            -webkit-user-select: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WAVE Animation</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
-        .wave-text-container {
-            font-family: 'Montserrat', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #080c14;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: system-ui, -apple-system, sans-serif;
+      touch-action: none;
+    }
 
-        .glow-letter {
-            display: inline-block;
-            color: #38bdf8;
-            text-shadow: 
-                0 0 12px rgba(56, 189, 248, 0.9),
-                0 0 30px rgba(56, 189, 248, 0.7),
-                0 0 60px rgba(14, 165, 233, 0.5),
-                0 0 100px rgba(14, 165, 233, 0.3);
-            will-change: transform;
-            line-height: 1;
-        }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 60px;
+      width: 100%;
+      height: 100%;
+    }
 
-        .ambient-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 60vw;
-            height: 60vw;
-            max-width: 500px;
-            max-height: 500px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(14, 165, 233, 0.02) 65%, transparent 80%);
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            pointer-events: none;
-            filter: blur(40px);
-        }
+    /* Circular Profile Container */
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 0 15px rgba(56, 189, 248, 0.3);
+      background-color: #0f172a;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
 
-        .avatar-ring {
-            box-shadow: 
-                0 0 25px rgba(56, 189, 248, 0.6),
-                0 0 50px rgba(14, 165, 233, 0.35),
-                inset 0 0 15px rgba(56, 189, 248, 0.3);
-        }
-    </style>
+    /* Fallback Icon when image is not set */
+    .profile-avatar::before {
+      content: '';
+      width: 40px;
+      height: 40px;
+      border: 2px dashed #38bdf8;
+      border-radius: 50%;
+      opacity: 0.4;
+      display: var(--placeholder-display, block);
+    }
+
+    /* WAVE Text Canvas Container */
+    .wave-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wave-text {
+      display: flex;
+      gap: 12px;
+    }
+
+    .letter {
+      font-size: 80px;
+      font-weight: 900;
+      color: #38bdf8;
+      text-shadow: 0 0 25px rgba(56, 189, 248, 0.8), 0 0 50px rgba(56, 189, 248, 0.4);
+      display: inline-block;
+      will-change: transform;
+    }
+  </style>
 </head>
-<body class="flex items-center justify-center">
+<body>
 
-    <!-- Background Ambient Glow -->
-    <div class="ambient-glow"></div>
+  <div class="container">
+    <!-- Profile Circle -->
+    <div class="profile-avatar" id="profileAvatar"></div>
 
-    <main class="relative z-10 w-full h-full flex flex-col items-center justify-between py-10 md:py-16">
-        
-        <!-- TOP SECTION: Circular Profile Picture with user image -->
-        <div class="pt-4 sm:pt-8 flex flex-col items-center">
-            <div class="avatar-ring relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full border-2 border-sky-400 bg-slate-900 overflow-hidden flex items-center justify-center">
-                <img 
-                    src="114621.png" 
-                    alt="Profile Picture" 
-                    class="w-full h-full object-cover pointer-events-none"
-                    onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'"
-                />
-            </div>
-        </div>
+    <!-- WAVE Text Effect -->
+    <div class="wave-container">
+      <div class="wave-text" id="waveText">
+        <span class="letter">W</span>
+        <span class="letter">A</span>
+        <span class="letter">V</span>
+        <span class="letter">E</span>
+      </div>
+    </div>
+  </div>
 
-        <!-- CENTER SECTION: Glowing WAVE Animation -->
-        <div class="flex-1 flex items-center justify-center w-full my-auto">
-            <div id="textContainer" class="wave-text-container gap-[2vw] md:gap-[1.5vw] text-[18vw] sm:text-[15vw] md:text-[13vw] lg:text-[11vw] font-black tracking-wider">
-                <!-- Text elements added dynamically via JS -->
-            </div>
-        </div>
+  <script>
+    // ==========================================
+    // ضع رابط الصورة المباشر الخاص بك هنا:
+    // ==========================================
+    const PROFILE_IMAGE_URL = ''; // مثال: 'https://domain.com/my-photo.jpg'
 
-        <!-- BOTTOM BALANCE SPACE -->
-        <div class="h-8 sm:h-12"></div>
-    </main>
+    const avatarElem = document.getElementById('profileAvatar');
+    if (PROFILE_IMAGE_URL && PROFILE_IMAGE_URL.trim() !== '') {
+      avatarElem.style.backgroundImage = `url('${PROFILE_IMAGE_URL}')`;
+      avatarElem.style.setProperty('--placeholder-display', 'none');
+    }
 
-    <script>
-        // Disable touch scrolling and gestures
-        document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-        document.addEventListener('gesturestart', (e) => e.preventDefault());
-        document.addEventListener('wheel', (e) => {
-            if (e.ctrlKey) e.preventDefault();
-        }, { passive: false });
+    // Wave Animation Logic
+    const letters = document.querySelectorAll('.letter');
+    let time = 0;
 
-        const textContainer = document.getElementById('textContainer');
-        const text = "WAVE";
-        let letterElements = [];
-        let time = 0;
+    function animate() {
+      time += 0.04;
+      letters.forEach((letter, index) => {
+        const yOffset = Math.sin(time + index * 0.8) * 20;
+        const rotate = Math.cos(time + index * 0.8) * 8;
+        letter.style.transform = `translateY(${yOffset}px) rotate(${rotate}deg)`;
+      });
+      requestAnimationFrame(animate);
+    }
 
-        // Build glowing text letters
-        function initText() {
-            textContainer.innerHTML = '';
-            letterElements = [];
+    animate();
 
-            text.split('').forEach((char, index) => {
-                const span = document.createElement('span');
-                span.innerText = char;
-                span.className = 'glow-letter';
-                textContainer.appendChild(span);
-                letterElements.push({
-                    element: span,
-                    index: index
-                });
-            });
-        }
-
-        // Animate letters in a continuous wave motion
-        function animateWave() {
-            time += 0.045;
-
-            letterElements.forEach((item) => {
-                const phase = item.index * 0.7;
-                const yOffset = Math.sin(time + phase) * 22;
-                const rotation = Math.cos(time + phase) * 4;
-
-                item.element.style.transform = `translate3d(0, ${yOffset}px, 0) rotate(${rotation}deg)`;
-            });
-
-            requestAnimationFrame(animateWave);
-        }
-
-        window.onload = () => {
-            initText();
-            animateWave();
-        };
-    </script>
+    // Prevent interactions/zooming
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    document.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+  </script>
 </body>
 </html>
