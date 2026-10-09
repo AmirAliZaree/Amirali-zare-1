@@ -25,7 +25,7 @@
       touch-action: none;
     }
 
-    /* صفحه خوش‌آمدگویی اولیه برای دور زدن باگ مرورگر و پخش موفق آهنگ */
+    /* صفحه ورود اولیه تمیز و بدون باگ */
     #welcomeOverlay {
       position: fixed;
       top: 0;
@@ -38,12 +38,12 @@
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      gap: 20px;
-      transition: opacity 0.5s ease;
+      gap: 25px;
+      cursor: pointer;
     }
 
     .enter-btn {
-      padding: 14px 35px;
+      padding: 15px 40px;
       background: rgba(56, 189, 248, 0.15);
       border: 2px solid rgba(56, 189, 248, 0.6);
       color: #38bdf8;
@@ -54,9 +54,10 @@
       box-shadow: 0 0 25px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(56, 189, 248, 0.2);
       transition: all 0.3s ease;
       letter-spacing: 1px;
+      pointer-events: none; /* کلیک روی کل صفحه یا دکمه به یک اندازه عمل می‌کند */
     }
 
-    .enter-btn:hover {
+    #welcomeOverlay:hover .enter-btn {
       background: rgba(56, 189, 248, 0.3);
       box-shadow: 0 0 35px rgba(56, 189, 248, 0.8), inset 0 0 20px rgba(56, 189, 248, 0.4);
       transform: scale(1.05);
@@ -276,10 +277,10 @@
 </head>
 <body>
 
-  <!-- صفحه خوش‌آمدگویی برای باز کردن قفل صوت و ورود بدون باگ -->
-  <div id="welcomeOverlay">
+  <!-- صفحه خوش‌آمدگویی سراسری (با یک کلیک در هر نقطه یا روی دکمه وارد سایت می‌شوید) -->
+  <div id="welcomeOverlay" onclick="startSite()">
     <div style="color: #38bdf8; font-size: 24px; font-weight: 900; text-shadow: 0 0 15px rgba(56,189,248,0.8); letter-spacing: 2px;">𝐈 𝐰𝐢𝐥𝐥 𝐬𝐮𝐜𝐜𝐞𝐞𝐝</div>
-    <button class="enter-btn" onclick="startSite()">ورود به سایت</button>
+    <button class="enter-btn">ورود به سایت</button>
   </div>
 
   <div class="container">
@@ -376,17 +377,16 @@
 
     loadTrack(currentTrackIndex);
 
-    // تابع ورود به سایت و پخش هم‌زمان بدون هیچ باگ
+    // تابع اصلی برای ورود به سایت و پخش هم‌زمان بدون باگ با یک کلیک
     function startSite() {
       audio.play().then(() => {
         playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        // محو شدن صفحه خوش‌آمدگویی
         welcomeOverlay.style.opacity = '0';
         setTimeout(() => {
           welcomeOverlay.style.display = 'none';
-        }, 500);
+        }, 400);
       }).catch(err => {
-        console.log("Playback error:", err);
+        console.log("Audio play error:", err);
       });
     }
 
