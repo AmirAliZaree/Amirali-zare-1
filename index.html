@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WAVE</title>
+  <title>hosseyn</title>
   <style>
     * {
       box-sizing: border-box;
@@ -35,7 +35,7 @@
       100% { transform: translate(0, 0) rotate(0deg); }
     }
 
-    /* صفحه ورود اولیه با قابلیت محو شدن نرم */
+    /* صفحه ورود اولیه با قابلیت محو شدن بسیار آهسته و ملایم */
     #welcomeOverlay {
       position: fixed;
       top: 0;
@@ -51,13 +51,13 @@
       cursor: pointer;
       opacity: 1;
       visibility: visible;
-      transition: opacity 0.8s ease, transform 0.8s ease;
+      transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1), transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* استایل زمان محو شدن */
+    /* حالت فید اوت بسیار نرم و طولانی */
     #welcomeOverlay.fade-out {
       opacity: 0;
-      transform: scale(1.05);
+      transform: scale(1.08);
       visibility: hidden;
     }
 
@@ -418,11 +418,11 @@
     function startSite() {
       audio.play().then(() => {
         playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        // اعمال کلاس محو شدن نرم
+        // اعمال کلاس محو شدن ملایم و طولانی (۱.۵ ثانیه)
         welcomeOverlay.classList.add('fade-out');
         setTimeout(() => {
           welcomeOverlay.style.display = 'none';
-        }, 800);
+        }, 1500);
       }).catch(err => {
         console.log("Audio play error:", err);
       });
