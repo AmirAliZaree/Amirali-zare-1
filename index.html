@@ -1,0 +1,25 @@
+
+<div class="container">
+    <h1 class="wave-text">
+        <span>W</span>
+        <span>A</span>
+        <span>V</span>
+        <span>E</span>
+    </h1>
+
+    
+<audio id="siteMusic" autoplay loop preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const music = document.getElementById("siteMusic");
+
+music.volume = 0.5;
+
+window.addEventListener("load", () => {
+    music.play().catch(() => {
+        // بعضی مرورگرها پخش خودکار را مسدود می‌کنند.
+    });
+});
+</script>
