@@ -111,7 +111,7 @@
       border: 3px solid #38bdf8;
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 0 15px rgba(56, 189, 248, 0.3);
       background-color: #0f172a;
-      background-image: url('profile.jpg'); /* عکس هم‌مسیر در گیت‌هاب */
+      background-image: url('profile.jpg');
       background-size: cover;
       background-position: center;
       position: relative;
@@ -149,7 +149,7 @@
       will-change: transform;
     }
 
-    /* پلیر آهنگ مستطیلی شیشه‌ای در پایین صفحه */
+    /* پلیر موزیک با قابلیت چند آهنگ و دکمه بعدی */
     .music-player {
       width: 100%;
       max-width: 340px;
@@ -161,14 +161,20 @@
       padding: 12px 16px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), inset 0 0 10px rgba(56, 189, 248, 0.1);
     }
 
-    /* دکمه پلی / پاز */
-    .play-btn {
-      width: 40px;
-      height: 40px;
+    /* دکمه‌های کنترلی پلیر */
+    .player-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .control-btn {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: rgba(56, 189, 248, 0.15);
       border: 1px solid rgba(56, 189, 248, 0.5);
@@ -182,14 +188,14 @@
       flex-shrink: 0;
     }
 
-    .play-btn:hover {
+    .control-btn:hover {
       background: rgba(56, 189, 248, 0.3);
       transform: scale(1.05);
     }
 
-    .play-btn svg {
-      width: 18px;
-      height: 18px;
+    .control-btn svg {
+      width: 16px;
+      height: 16px;
       fill: currentColor;
     }
 
@@ -205,7 +211,7 @@
       display: flex;
       justify-content: space-between;
       color: #38bdf8;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.5px;
       text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
@@ -268,15 +274,23 @@
       </div>
     </div>
 
-    <!-- پلیر موزیک مستطیلی در پایین صفحه -->
+    <!-- پلیر موزیک با قابلیت چند آهنگ و دکمه بعدی -->
     <div class="music-player">
-      <div class="play-btn" id="playBtn" onclick="togglePlay()">
-        <!-- آیکون Play -->
-        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <div class="player-controls">
+        <!-- دکمه پلی / پاز -->
+        <div class="control-btn" id="playBtn" onclick="togglePlay()">
+          <svg id="playIcon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </div>
+        <!-- دکمه آهنگ بعدی -->
+        <div class="control-btn" onclick="nextTrack()" title="Next Track">
+          <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </div>
       </div>
+
       <div class="track-info">
         <div class="track-details">
-          <span>𝐁𝐮𝐢𝐥𝐝𝐢𝐧𝐠 𝐭𝐡𝐞 𝐛𝐞𝐬𝐭 𝐯𝐞𝐫𝐬𝐢𝐨𝐧 𝐨𝐟 𝐦𝐲𝐬𝐞𝐥𝐟   </span>
+          <span id="trackTitle">Music 1</span>
+          <span id="timeDisplay">0:00 / 0:00</span>
         </div>
         <div class="progress-bar" id="progressBar" onclick="seekAudio(event)">
           <div class="progress-fill" id="progressFill"></div>
@@ -285,8 +299,8 @@
     </div>
   </div>
 
-  <!-- تگ صوتی HTML5 (فایل آهنگ را در کنار index.html آپلود کنید و نام آن را جایگزین music.mp3 کنید) -->
-  <audio id="audioPlayer" src="music.mp3" preload="metadata"></audio>
+  <!-- تگ صوتی با قابلیت اتوپلی و دور زدن محدودیت مرورگر -->
+  <audio id="audioPlayer" autoplay muted preload="auto"></audio>
 
   <script>
     // انیمیشن موجی متن WAVE
@@ -305,28 +319,67 @@
 
     animate();
 
-    // کنترلرهای پلیر موزیک
+    // لیست ۳ آهنگ شما
+    const playlist = [
+      { name: "Music 1", src: "music1.mp3" },
+      { name: "Music 2", src: "music2.mp3" },
+      { name: "Music 3", src: "music3.mp3" }
+    ];
+
+    let currentTrackIndex = 0;
     const audio = document.getElementById('audioPlayer');
     const playBtn = document.getElementById('playBtn');
     const playIcon = document.getElementById('playIcon');
     const progressFill = document.getElementById('progressFill');
     const timeDisplay = document.getElementById('timeDisplay');
     const progressBar = document.getElementById('progressBar');
+    const trackTitle = document.getElementById('trackTitle');
+
+    function loadTrack(index) {
+      audio.src = playlist[index].src;
+      trackTitle.textContent = playlist[index].name;
+      audio.load();
+    }
+
+    // بارگذاری آهنگ اول و پخش خودکار بی‌صدا، سپس فعالسازی صدا
+    loadTrack(currentTrackIndex);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      audio.play().then(() => {
+        // پس از شروع موفقیت‌آمیز پخش، صدا بلافاصله وصل می‌شود
+        setTimeout(() => {
+          audio.muted = false;
+        }, 300);
+      }).catch(err => {
+        console.log("Auto-play error:", err);
+      });
+    });
 
     function togglePlay() {
       if (audio.paused) {
         audio.play().then(() => {
-          // تغییر آیکون به Pause
           playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        }).catch(err => {
-          console.log("Playback blocked or file not found", err);
         });
       } else {
         audio.pause();
-        // تغییر آیکون به Play
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
       }
     }
+
+    // رفتن به آهنگ بعدی
+    function nextTrack() {
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      audio.muted = false; // مطمئن شدن از باز بودن صدا در آهنگ‌های بعدی
+      loadTrack(currentTrackIndex);
+      audio.play().then(() => {
+        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      });
+    }
+
+    // به صورت خودکار با تمام شدن هر آهنگ، آهنگ بعدی پخش می‌شود
+    audio.addEventListener('ended', () => {
+      nextTrack();
+    });
 
     // به‌روزرسانی نوار پیشرفت و زمان آهنگ
     audio.addEventListener('timeupdate', () => {
@@ -337,13 +390,7 @@
       }
     });
 
-    // پایان آهنگ و ریست شدن دکمه
-    audio.addEventListener('ended', () => {
-      playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-      progressFill.style.width = '0%';
-    });
-
-    // قابلیت اسکرول روی نوار پیشرفت برای جابجایی در آهنگ
+    // قابلیت کلیک روی نوار پیشرفت برای جابجایی
     function seekAudio(e) {
       if (!audio.duration) return;
       const rect = progressBar.getBoundingClientRect();
@@ -358,7 +405,6 @@
       return mins + ':' + (secs < 10 ? '0' : '') + secs;
     }
 
-    // تنظیم اولیه زمان
     audio.addEventListener('loadedmetadata', () => {
       timeDisplay.textContent = '0:00 / ' + formatTime(audio.duration);
     });
