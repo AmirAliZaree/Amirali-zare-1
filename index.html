@@ -1,25 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glowing Wave Text Effect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0B0F17;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
 
-<div class="container">
-    <h1 class="wave-text">
-        <span>W</span>
-        <span>A</span>
-        <span>V</span>
-        <span>E</span>
-    </h1>
+        .wave-text-container {
+            font-family: 'Montserrat', sans-serif;
+        }
 
-    
-<audio id="siteMusic" autoplay loop preload="auto">
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
+        /* Glowing text styling */
+        .glow-letter {
+            display: inline-block;
+            color: #38BDF8;
+            text-shadow: 
+                0 0 10px rgba(56, 189, 248, 0.8),
+                0 0 20px rgba(56, 189, 248, 0.6),
+                0 0 40px rgba(14, 165, 233, 0.5),
+                0 0 80px rgba(14, 165, 233, 0.3);
+            will-change: transform, text-shadow;
+            transition: color 0.3s ease;
+            user-select: none;
+        }
 
-<script>
-const music = document.getElementById("siteMusic");
+        .glow-letter:hover {
+            color: #38BDF8;
+            text-shadow: 
+                0 0 15px rgba(56, 189, 248, 1),
+                0 0 30px rgba(56, 189, 248, 0.9),
+                0 0 60px rgba(14, 165, 233, 0.8),
+                0 0 100px rgba(14, 165, 233, 0.6);
+        }
 
-music.volume = 0.5;
+        /* Ambient glowing background blur */
+        .ambient-glow {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.1) 40%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: left 0.15s ease-out, top 0.15s ease-out;
+            filter: blur(30px);
+        }
 
-window.addEventListener("load", () => {
-    music.play().catch(() => {
-        // بعضی مرورگرها پخش خودکار را مسدود می‌کنند.
-    });
-});
-</script>
+        /* Custom Range Slider styling */
+        input[type=range] {
+            accent-color: #38BDF8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center relative select-none">
+
+    <!-- Background grid pattern -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f293715_1px,transparent_1px),linear-gradient(to_bottom,#1f293715_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
+
+    <!-- Mouse follow glow -->
+    <div id="ambientGlow" class="ambient-glow left-1/2 top-1/2"></div>
+
+    <!-- Top Bar -->
+    <header class="w-full max-w-6xl p-6 flex justify-between items-center z-10">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-400 font-bold">W</div>
+            <span class="font-semibold text-sm tracking-wider text-slate-300">WAVE.FX</span>
+        </div>
+        <button id="resetBtn" class="text-xs px-4 py-2 rounded-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 transition-all hover:border-cyan-500/50">
+            Reset Animation
+        </button>
+    </header>
+
+    <!-- Main Display Section -->
+    <main class="flex-1 flex flex-col justify-center items-center px-4 w-full z-10 my-auto">
+        <div id="textContainer" class="wave-text-container flex justify-center items-center flex-wrap gap-2 md:gap-4 my-12 cursor-pointer">
+            <!-- Letters injected dynamically via JS -->
+        </div>
+
+        <p class="text-xs md:text-sm text-slate-500 tracking-widest uppercase font-medium mt-4 text-center">
+            Move mouse to distort wave • Hover over letters
+        </p>
+    </main>
+
+    <!-- Interactive Controls Bar -->
+    <footer class="w-full max-w-2xl px-6 py-4 mb-8 z-10">
+        <div class="bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-2xl flex flex-col md:flex-row gap-6 items-center justify-between">
+            
+            <!-- Text Input -->
+            <div class="flex flex-col w-full md:w-1/3">
+                <label for="textInput" class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Custom Text</label>
+                <input type="text" id="textInput" value="WAVE" maxlength="12" 
+                    class="bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-sm text-cyan-300 font-semibold focus:outline-none transition-all tracking-wider text-center">
+            </div>
+
+            <!-- Speed Control -->
+            <div class="flex flex-col w-full md:w-1/3">
+                <div class="flex justify-between items-center mb-2">
+                    <label for="speedSlider" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Speed</label>
+                    <span id="speedVal" class="text-xs text-cyan-400 font-mono">1.0x</span>
+                </div>
+                <input type="range" id="speedSlider" min="0.2" max="3.0" step="0.1" value="1.0" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+            </div>
+
+            <!-- Amplitude/Height Control -->
+            <div class="flex flex-col w-full md:w-1/3">
+                <div class="flex justify-between items-center mb-2">
+                    <label for="ampSlider" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Wave Height</label>
+                    <span id="ampVal" class="text-xs text-cyan-400 font-mono">35px</span>
+                </div>
+                <input type="range" id="ampSlider" min="5" max="80" step="1" value="35" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const textContainer = document.getElementById('textContainer');
+        const textInput = document.getElementById('textInput');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedVal = document.getElementById('speedVal');
+        const ampSlider = document.getElementById('ampSlider');
+        const ampVal = document.getElementById('ampVal');
+        const resetBtn = document.getElementById('resetBtn');
+        const ambientGlow = document.getElementById('ambientGlow');
+
+        // Animation State
+        let text = "WAVE";
+        let letterElements = [];
+        let animationFrameId = null;
+        let time = 0;
+        let speed = 1.0;
+        let amplitude = 35;
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        function createTextElements(str) {
+            textContainer.innerHTML = '';
+            letterElements = [];
+            
+            const letters = str.split('');
+            letters.forEach((char, index) => {
+                const span = document.createElement('span');
+                span.innerText = char === ' ' ? '\u00A0' : char;
+                span.className = 'glow-letter text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black transition-transform duration-75';
+                
+                // Store initial position and offset info
+                const letterObj = {
+                    element: span,
+                    baseIndex: index,
+                    x: 0,
+                    y: 0,
+                    rotation: 0
+                };
+                
+                textContainer.appendChild(span);
+                letterElements.push(letterObj);
+            });
+        }
+
+        function animate() {
+            time += 0.03 * speed;
+
+            letterElements.forEach((item, index) => {
+                const element = item.element;
+                const rect = element.getBoundingClientRect();
+                const letterCenterX = rect.left + rect.width / 2;
+                const letterCenterY = rect.top + rect.height / 2;
+
+                // Distance calculation for mouse interaction ripple
+                const distX = mouseX - letterCenterX;
+                const distY = mouseY - letterCenterY;
+                const distance = Math.sqrt(distX * distX + distY * distY);
+                
+                // Interactive mouse proximity offset
+                const maxDist = 250;
+                let mouseImpact = 0;
+                if (distance < maxDist) {
+                    mouseImpact = (1 - distance / maxDist) * 20;
+                }
+
+                // Primary sine wave formula for vertical movement
+                const phaseOffset = index * 0.6;
+                const yOffset = Math.sin(time + phaseOffset) * amplitude - mouseImpact;
+                
+                // Gentle rotation following the wave trajectory
+                const rotOffset = Math.cos(time + phaseOffset) * (amplitude * 0.25);
+
+                // Apply dynamic CSS transformations
+                element.style.transform = `translateY(${yOffset}px) rotate(${rotOffset}deg)`;
+            });
+
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // Move background ambient light smoothly
+            ambientGlow.style.left = `${e.clientX}px`;
+            ambientGlow.style.top = `${e.clientY}px`;
+        });
+
+        // Touch support for mobile devices
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+                ambientGlow.style.left = `${mouseX}px`;
+                ambientGlow.style.top = `${mouseY}px`;
+            }
+        });
+
+        textInput.addEventListener('input', (e) => {
+            text = e.target.value.toUpperCase() || 'WAVE';
+            createTextElements(text);
+        });
+
+        speedSlider.addEventListener('input', (e) => {
+            speed = parseFloat(e.target.value);
+            speedVal.innerText = `${speed.toFixed(1)}x`;
+        });
+
+        ampSlider.addEventListener('input', (e) => {
+            amplitude = parseInt(e.target.value);
+            ampVal.innerText = `${amplitude}px`;
+        });
+
+        resetBtn.addEventListener('click', () => {
+            text = 'WAVE';
+            textInput.value = 'WAVE';
+            speed = 1.0;
+            speedSlider.value = 1.0;
+            speedVal.innerText = '1.0x';
+            amplitude = 35;
+            ampSlider.value = 35;
+            ampVal.innerText = '35px';
+            createTextElements(text);
+        });
+
+        // Initialize application on load
+        window.onload = () => {
+            createTextElements(text);
+            animate();
+        };
+    </script>
+</body>
+</html>
+```
