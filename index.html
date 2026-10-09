@@ -2,21 +2,21 @@
 <html lang="en" class="h-full w-full overflow-hidden select-none">
 <head>
     <meta charset="UTF-8">
-    <!-- Disable user scaling, zooming, and viewport resizing behavior -->
+    <!-- Lock down viewport scaling, zoom, and scroll -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>WAVE Animation</title>
+    <title>WAVE Animation & Profile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     
     <style>
-        /* Lock html and body dimensions to 100% fixed screen area */
+        /* Lock screen dimensions completely */
         html, body {
             margin: 0;
             padding: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden !important;
-            touch-action: none; /* Prevents touch gestures like pinch zoom & pull-to-refresh */
+            touch-action: none; /* Prevents gestures, drag zoom, pinch */
             background-color: #0b0e14;
             user-select: none;
             -webkit-user-select: none;
@@ -25,7 +25,7 @@
             left: 0;
         }
 
-        /* Container font and base layout */
+        /* WAVE Text Typography & Glowing Effect */
         .wave-text-container {
             font-family: 'Montserrat', sans-serif;
             display: flex;
@@ -33,7 +33,6 @@
             justify-content: center;
         }
 
-        /* Glowing text styling matching the reference video */
         .glow-letter {
             display: inline-block;
             color: #38bdf8;
@@ -46,38 +45,92 @@
             line-height: 1;
         }
 
-        /* Fixed ambient light glow centered behind the text */
+        /* Ambient Glow behind profile & text */
         .ambient-glow {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 50vw;
-            height: 50vw;
-            max-width: 500px;
-            max-height: 500px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(14, 165, 233, 0.03) 55%, transparent 70%);
+            width: 60vw;
+            height: 60vw;
+            max-width: 550px;
+            max-height: 550px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(14, 165, 233, 0.02) 60%, transparent 75%);
             transform: translate(-50%, -50%);
             border-radius: 50%;
             pointer-events: none;
-            filter: blur(30px);
+            filter: blur(40px);
+        }
+
+        /* Avatar Outer Glowing Ring */
+        .avatar-ring {
+            box-shadow: 
+                0 0 15px rgba(56, 189, 248, 0.4),
+                0 0 35px rgba(14, 165, 233, 0.25),
+                inset 0 0 15px rgba(56, 189, 248, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .avatar-ring:hover {
+            box-shadow: 
+                0 0 25px rgba(56, 189, 248, 0.7),
+                0 0 50px rgba(14, 165, 233, 0.4),
+                inset 0 0 20px rgba(56, 189, 248, 0.4);
+            transform: scale(1.03);
         }
     </style>
 </head>
 <body class="flex items-center justify-center">
 
-    <!-- Soft background halo glow -->
+    <!-- Ambient Glow Effect -->
     <div class="ambient-glow"></div>
 
-    <!-- Centered Fixed Text Wrapper -->
-    <main class="relative z-10 flex items-center justify-center w-full h-full">
-        <!-- Text sized using container-relative clamp so it stays visually proportional on all screen sizes -->
-        <div id="textContainer" class="wave-text-container gap-[2vw] md:gap-[1.5vw] text-[18vw] sm:text-[15vw] md:text-[13vw] lg:text-[11vw] font-black tracking-wider">
-            <!-- Letters generated dynamically -->
+    <!-- Hidden File Input for uploading custom image -->
+    <input type="file" id="imageUploader" accept="image/*" class="hidden" />
+
+    <!-- Main Fixed Canvas / Viewport Container -->
+    <main class="relative z-10 w-full h-full flex flex-col items-center justify-between py-12 md:py-16">
+        
+        <!-- TOP SECTION: Circular Profile Avatar (Positioned far above text) -->
+        <div class="pt-2 sm:pt-6 flex flex-col items-center">
+            <div 
+                id="avatarContainer"
+                title="Click to change profile picture"
+                onclick="document.getElementById('imageUploader').click()" 
+                class="avatar-ring relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full border-2 border-sky-400/80 bg-slate-900/80 cursor-pointer overflow-hidden flex items-center justify-center group"
+            >
+                <!-- Default Avatar Placeholder Image -->
+                <img 
+                    id="avatarImage" 
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" 
+                    alt="Profile Avatar" 
+                    class="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-80"
+                    onerror="this.src='https://placehold.co/400x400/0f172a/38bdf8?text=Profile'"
+                />
+
+                <!-- Upload Overlay Icon -->
+                <div class="absolute inset-0 bg-slate-950/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-sky-400 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 sm:w-8 sm:h-8 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l0.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l0.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="text-[10px] sm:text-xs font-semibold tracking-wide">Change Photo</span>
+                </div>
+            </div>
         </div>
+
+        <!-- CENTER SECTION: Glowing Wave Text -->
+        <div class="flex-1 flex items-center justify-center w-full my-auto">
+            <div id="textContainer" class="wave-text-container gap-[2vw] md:gap-[1.5vw] text-[18vw] sm:text-[15vw] md:text-[13vw] lg:text-[11vw] font-black tracking-wider">
+                <!-- Spans for WAVE text generated dynamically -->
+            </div>
+        </div>
+
+        <!-- BOTTOM SPACE HOLDER to keep text perfectly balanced -->
+        <div class="h-10 sm:h-12"></div>
     </main>
 
     <script>
-        // Prevent all user scaling & scrolling shortcuts
+        // Prevent scaling, pull-to-refresh, wheel zoom, and scrolling gestures
         document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
         document.addEventListener('gesturestart', (e) => e.preventDefault());
         document.addEventListener('wheel', (e) => {
@@ -85,11 +138,14 @@
         }, { passive: false });
 
         const textContainer = document.getElementById('textContainer');
+        const imageUploader = document.getElementById('imageUploader');
+        const avatarImage = document.getElementById('avatarImage');
+        
         const text = "WAVE";
         let letterElements = [];
         let time = 0;
 
-        // Build letter nodes
+        // Create individual glowing text nodes
         function initText() {
             textContainer.innerHTML = '';
             letterElements = [];
@@ -106,15 +162,26 @@
             });
         }
 
-        // Smooth wave motion loop
+        // Handle Image Upload for custom profile picture
+        imageUploader.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Continuous harmonic wave motion loop
         function animateWave() {
             time += 0.04;
 
             letterElements.forEach((item) => {
-                // Harmonic wave math formula for smooth continuous movement
                 const phase = item.index * 0.7;
-                const yOffset = Math.sin(time + phase) * 22; // Wave amplitude height
-                const rotation = Math.cos(time + phase) * 5;  // Slight character tilt angle
+                const yOffset = Math.sin(time + phase) * 20; // Height of wave movement
+                const rotation = Math.cos(time + phase) * 4;  // Slight dynamic character angle
 
                 item.element.style.transform = `translate3d(0, ${yOffset}px, 0) rotate(${rotation}deg)`;
             });
