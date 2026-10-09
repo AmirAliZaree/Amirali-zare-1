@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AmirAli Zare</title>
+  <title>WAVE Animation</title>
   <style>
     * {
       box-sizing: border-box;
@@ -54,7 +54,7 @@
       box-shadow: 0 0 25px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(56, 189, 248, 0.2);
       transition: all 0.3s ease;
       letter-spacing: 1px;
-      pointer-events: none; /* کلیک روی کل صفحه یا دکمه به یک اندازه عمل می‌کند */
+      pointer-events: none;
     }
 
     #welcomeOverlay:hover .enter-btn {
@@ -70,7 +70,8 @@
       justify-content: space-between;
       width: 100%;
       height: 100%;
-      padding: 30px 20px 35px;
+      /* افزایش فاصله از پایین صفحه برای بالاتر آمدن پلیر */
+      padding: 30px 20px 55px;
     }
 
     /* بخش بالای صفحه شامل آیکون‌ها و متن وسط آن‌ها */
@@ -277,7 +278,7 @@
 </head>
 <body>
 
-  <!-- صفحه خوش‌آمدگویی سراسری (با یک کلیک در هر نقطه یا روی دکمه وارد سایت می‌شوید) -->
+  <!-- صفحه خوش‌آمدگویی سراسری -->
   <div id="welcomeOverlay" onclick="startSite()">
     <div style="color: #38bdf8; font-size: 24px; font-weight: 900; text-shadow: 0 0 15px rgba(56,189,248,0.8); letter-spacing: 2px;">𝐈 𝐰𝐢𝐥𝐥 𝐬𝐮𝐜𝐜𝐞𝐞𝐝</div>
     <button class="enter-btn">ورود به سایت</button>
@@ -377,7 +378,6 @@
 
     loadTrack(currentTrackIndex);
 
-    // تابع اصلی برای ورود به سایت و پخش هم‌زمان بدون باگ با یک کلیک
     function startSite() {
       audio.play().then(() => {
         playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
