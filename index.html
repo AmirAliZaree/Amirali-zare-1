@@ -160,11 +160,43 @@
       text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
     }
 
+    /* استایل کپسول لوکیشن (Tabriz) */
+    .location-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(56, 189, 248, 0.4);
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2), inset 0 0 8px rgba(56, 189, 248, 0.1);
+      color: #38bdf8;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .location-badge:hover {
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+      transform: scale(1.05);
+    }
+
+    .location-badge svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
     .top-section {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 35px;
+      gap: 25px; /* تنظیم فاصله بین المان‌ها در بالای صفحه */
       flex: 1;
       justify-content: center;
     }
@@ -336,6 +368,12 @@
     </div>
 
     <div class="top-section">
+      <!-- کپسول لوکیشن اضافه شده در محل مورد نظر -->
+      <div class="location-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <span>Tabriz</span>
+      </div>
+
       <div class="profile-container">
         <div class="profile-avatar"></div>
         <div class="profile-title">[𝐏𝐫𝐨𝐠𝐫𝐚𝐦𝐦𝐞𝐫]</div>
@@ -418,7 +456,6 @@
     function startSite() {
       audio.play().then(() => {
         playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        // اعمال کلاس محو شدن ملایم و طولانی (۱.۵ ثانیه)
         welcomeOverlay.classList.add('fade-out');
         setTimeout(() => {
           welcomeOverlay.style.display = 'none';
