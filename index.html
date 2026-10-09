@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -35,7 +35,7 @@
       height: 100%;
     }
 
-    /* Circular Profile Container */
+    /* پروفایل دایره‌ای */
     .profile-avatar {
       width: 120px;
       height: 120px;
@@ -43,26 +43,13 @@
       border: 3px solid #38bdf8;
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 0 15px rgba(56, 189, 248, 0.3);
       background-color: #0f172a;
+      background-image: url('profile.jpg'); /* فراخوانی عکس هم‌مسیر در گیت‌هاب */
       background-size: cover;
       background-position: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       position: relative;
     }
 
-    /* Fallback Icon when image is not set */
-    .profile-avatar::before {
-      content: '';
-      width: 40px;
-      height: 40px;
-      border: 2px dashed #38bdf8;
-      border-radius: 50%;
-      opacity: 0.4;
-      display: var(--placeholder-display, block);
-    }
-
-    /* WAVE Text Canvas Container */
+    /* افکت متن WAVE */
     .wave-container {
       display: flex;
       align-items: center;
@@ -87,10 +74,10 @@
 <body>
 
   <div class="container">
-    <!-- Profile Circle -->
-    <div class="profile-avatar" id="profileAvatar"></div>
+    <!-- پروفایل دایره‌ای بالای متن -->
+    <div class="profile-avatar"></div>
 
-    <!-- WAVE Text Effect -->
+    <!-- متن موجی WAVE -->
     <div class="wave-container">
       <div class="wave-text" id="waveText">
         <span class="letter">W</span>
@@ -102,18 +89,7 @@
   </div>
 
   <script>
-    // ==========================================
-    // ضع رابط الصورة المباشر الخاص بك هنا:
-    // ==========================================
-    const PROFILE_IMAGE_URL = ''; // مثال: 'https://domain.com/my-photo.jpg'
-
-    const avatarElem = document.getElementById('profileAvatar');
-    if (PROFILE_IMAGE_URL && PROFILE_IMAGE_URL.trim() !== '') {
-      avatarElem.style.backgroundImage = `url('${PROFILE_IMAGE_URL}')`;
-      avatarElem.style.setProperty('--placeholder-display', 'none');
-    }
-
-    // Wave Animation Logic
+    // انیمیشن موجی
     const letters = document.querySelectorAll('.letter');
     let time = 0;
 
@@ -129,7 +105,7 @@
 
     animate();
 
-    // Prevent interactions/zooming
+    // غیرفعال کردن زوم و اسکرول برای ابعاد کاملاً ثابت
     document.addEventListener('gesturestart', (e) => e.preventDefault());
     document.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
   </script>
