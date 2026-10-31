@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>AmirAli Zare</title>
+<style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 50%, #0d192e 0%, #080c14 70%, #03060a 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: system-ui, -apple-system, sans-serif;
+      touch-action: none;
+      position: relative;
+    }
+
+    /* بوم ذرات شناور متحرک در پس‌زمینه */
+    #particlesCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* انیمیشن لرزش ملایم مخصوص دکمه ورود به سایت */
+    @keyframes btnShake {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-2px, 2px) rotate(-0.5deg); }
+      40% { transform: translate(2px, -2px) rotate(0.5deg); }
+      60% { transform: translate(-1px, -2px) rotate(-0.3deg); }
+      80% { transform: translate(2px, 1px) rotate(0.3deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    /* صفحه ورود اولیه با قابلیت محو شدن بسیار آهسته و ملایم */
+    #welcomeOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #080c14;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      cursor: pointer;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1), transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* حالت فید اوت بسیار نرم و طولانی */
+    #welcomeOverlay.fade-out {
+      opacity: 0;
+      transform: scale(1.08);
+      visibility: hidden;
+    }
+
+    /* کانتینر ثابت و شیشه‌ای */
+    .welcome-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+      padding: 35px;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+    }
+
+    /* دکمه ورود به سایت که لرزش دارد */
+    .enter-btn {
+      padding: 15px 40px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 2px solid rgba(56, 189, 248, 0.6);
+      color: #38bdf8;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(56, 189, 248, 0.2);
+      letter-spacing: 1px;
+      pointer-events: none;
+      display: inline-block;
+      animation: btnShake 0.6s infinite ease-in-out;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .welcome-card:hover .enter-btn {
+      background: rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.8), inset 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 100%;
+      padding: 30px 20px 75px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* بخش بالای صفحه شامل آیکون‌ها و متن وسط آن‌ها */
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 320px;
+      padding: 0 10px;
+    }
+
+    /* استایل آیکون‌های شیشه‌ای و نورانی */
+    .social-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(56, 189, 248, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(56, 189, 248, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #38bdf8;
+      text-decoration: none;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.25), inset 0 0 10px rgba(56, 189, 248, 0.1);
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .social-icon:hover {
+      background: rgba(56, 189, 248, 0.2);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.6), inset 0 0 15px rgba(56, 189, 248, 0.3);
+      transform: scale(1.08);
+    }
+
+    .social-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* متن وسط بین دو آیکون */
+    .header-center-text {
+      color: #38bdf8;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-align: center;
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+    }
+
+    /* استایل کپسول لوکیشن (Tabriz) */
+    .location-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(56, 189, 248, 0.4);
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2), inset 0 0 8px rgba(56, 189, 248, 0.1);
+      color: #38bdf8;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .location-badge:hover {
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+      transform: scale(1.05);
+    }
+
+    .location-badge svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .top-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* بخش پروفایل و عنوان زیر آن */
+    .profile-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* پروفایل دایره‌ای */
+    .profile-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 3px solid #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 0 15px rgba(56, 189, 248, 0.3);
+      background-color: #0f172a;
+      background-image: linear-gradient(135deg, #1e293b, #0f172a);
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* متن کوچک زیر پروفایل */
+    .profile-title {
+      color: #38bdf8;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.9;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    }
+
+    /* افکت متن WAVE */
+    .wave-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wave-text {
+      display: flex;
+      gap: 12px;
+    }
+
+    .letter {
+      font-size: 75px;
+      font-weight: 900;
+      color: #38bdf8;
+      text-shadow: 0 0 25px rgba(56, 189, 248, 0.8), 0 0 50px rgba(56, 189, 248, 0.4);
+      display: inline-block;
+      will-change: transform;
+    }
+
+    /* پلیر موزیک با قابلیت چند آهنگ و دکمه بعدی */
+    .music-player {
+      width: 100%;
+      max-width: 340px;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(56, 189, 248, 0.4);
+      border-radius: 16px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), inset 0 0 10px rgba(56, 189, 248, 0.1);
+    }
+
+    /* دکمه‌های کنترلی پلیر */
+    .player-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .control-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: #38bdf8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .control-btn:hover {
+      background: rgba(56, 189, 248, 0.3);
+      transform: scale(1.05);
+    }
+
+    .control-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* اطلاعات آهنگ و نوار پیشرفت */
+    .track-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .track-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+    }
+
+    .track-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* اکولایزر نئونی متحرک (Equalizer Visualizer) */
+    .equalizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 2.5px;
+      height: 13px;
+      padding: 0 1px;
+    }
+
+    .eq-bar {
+      width: 2.5px;
+      height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(to top, #38bdf8, #a855f7);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.7);
+      transition: height 0.25s ease, opacity 0.25s ease;
+    }
+
+    /* انیمیشن جهش نوارهای اکولایزر هنگام پخش موزیک */
+    .equalizer.active .eq-bar {
+      animation: eqBounce 1s ease-in-out infinite alternate;
+    }
+
+    .equalizer.active .eq-bar:nth-child(1) {
+      animation-duration: 0.75s;
+      animation-delay: 0.05s;
+    }
+    .equalizer.active .eq-bar:nth-child(2) {
+      animation-duration: 0.55s;
+      animation-delay: 0.2s;
+    }
+    .equalizer.active .eq-bar:nth-child(3) {
+      animation-duration: 0.9s;
+      animation-delay: 0.35s;
+    }
+    .equalizer.active .eq-bar:nth-child(4) {
+      animation-duration: 0.65s;
+      animation-delay: 0.1s;
+    }
+    .equalizer.active .eq-bar:nth-child(5) {
+      animation-duration: 0.8s;
+      animation-delay: 0.25s;
+    }
+
+    @keyframes eqBounce {
+      0% {
+        height: 3px;
+        box-shadow: 0 0 4px rgba(56, 189, 248, 0.5);
+      }
+      50% {
+        height: 13px;
+        box-shadow: 0 0 8px rgba(168, 85, 247, 0.9), 0 0 12px rgba(56, 189, 248, 0.7);
+      }
+      100% {
+        height: 5px;
+        box-shadow: 0 0 6px rgba(56, 189, 248, 0.7);
+      }
+    }
+
+    /* نوار پیشرفت آهنگ */
+    .progress-bar {
+      width: 100%;
+      height: 5px;
+      background: rgba(56, 189, 248, 0.2);
+      border-radius: 5px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: #38bdf8;
+      box-shadow: 0 0 10px #38bdf8;
+      transition: width 0.1s linear;
+    }
+  </style>
+</head>
+<body>
+<!-- بوم متحرک ذرات کوانتومی و نورانی -->
+<canvas id="particlesCanvas"></canvas>
+<!-- صفحه خوش‌آمدگویی سراسری -->
+<div id="welcomeOverlay" onclick="startSite()">
+<div class="welcome-card">
+<div style="color: #38bdf8; font-size: 24px; font-weight: 900; text-shadow: 0 0 15px rgba(56,189,248,0.8); letter-spacing: 2px;">𝐀𝐦𝐢𝐫𝐀𝐥𝐢 𝐙𝐚𝐫𝐞</div>
+<button class="enter-btn">𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐭𝐨 𝐭𝐡𝐞 𝐬𝐢𝐭𝐞</button>
+</div>
+</div>
+<div class="container">
+<!-- بخش بالای صفحه شامل آیکون تلگرام، متن وسط و آیکون اینستاگرام -->
+<div class="header-section" style="max-width: 440px; gap: 10px;"><style>.social-icon.brand-github { color: #f0f6fc; border-color: rgba(240, 246, 252, 0.4); background: rgba(240, 246, 252, 0.08); box-shadow: 0 0 15px rgba(255, 255, 255, 0.25), inset 0 0 10px rgba(255, 255, 255, 0.1); } .social-icon.brand-github:hover { background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 25px rgba(255, 255, 255, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.3); color: #ffffff; } .social-icon.brand-telegram { color: #2AABEE; border-color: rgba(42, 171, 238, 0.45); background: rgba(42, 171, 238, 0.1); box-shadow: 0 0 15px rgba(42, 171, 238, 0.35), inset 0 0 10px rgba(42, 171, 238, 0.15); } .social-icon.brand-telegram:hover { background: rgba(42, 171, 238, 0.25); box-shadow: 0 0 28px rgba(42, 171, 238, 0.8), inset 0 0 15px rgba(42, 171, 238, 0.35); color: #52c1ff; } .social-icon.brand-instagram { color: #ffffff; border-color: rgba(225, 48, 108, 0.5); background: radial-gradient(circle at 30% 107%, rgba(253, 221, 85, 0.2) 0%, rgba(253, 221, 85, 0.1) 5%, rgba(253, 89, 73, 0.25) 45%, rgba(214, 41, 118, 0.3) 60%, rgba(138, 58, 185, 0.3) 90%); box-shadow: 0 0 18px rgba(225, 48, 108, 0.45), 0 0 8px rgba(253, 89, 73, 0.3), inset 0 0 10px rgba(214, 41, 118, 0.2); } .social-icon.brand-instagram:hover { background: radial-gradient(circle at 30% 107%, rgba(253, 221, 85, 0.35) 0%, rgba(253, 221, 85, 0.2) 5%, rgba(253, 89, 73, 0.4) 45%, rgba(214, 41, 118, 0.45) 60%, rgba(138, 58, 185, 0.45) 90%); border-color: rgba(253, 89, 73, 0.8); box-shadow: 0 0 28px rgba(225, 48, 108, 0.8), 0 0 15px rgba(253, 89, 73, 0.6), inset 0 0 15px rgba(214, 41, 118, 0.35); } .social-icon.brand-youtube { color: #FF0000; border-color: rgba(255, 0, 0, 0.45); background: rgba(255, 0, 0, 0.1); box-shadow: 0 0 18px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.15); } .social-icon.brand-youtube:hover { background: rgba(255, 0, 0, 0.25); box-shadow: 0 0 28px rgba(255, 0, 0, 0.8), inset 0 0 15px rgba(255, 0, 0, 0.35); border-color: rgba(255, 0, 0, 0.8); }</style><div style="display: flex; gap: 10px;"><a class="social-icon brand-github" href="https://github.com" target="_blank" title="GitHub"><svg viewbox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"></path></svg></a><a class="social-icon brand-telegram" href="https://t.me/Amirali_Zare" target="_blank" title="Telegram"><svg viewbox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635.099-.002.321.023.465.141.119.098.152.228.166.331.016.12.032.392.016.602z"></path></svg></a></div><div class="header-center-text">𝐈 𝐰𝐢𝐥𝐥 𝐬𝐮𝐜𝐜𝐞𝐞𝐝</div><div style="display: flex; gap: 10px;"><a class="social-icon brand-instagram" href="https://www.instagram.com/amira_lizare7?vrfl=MXBncXI1cjhteGE4OQ==" target="_blank" title="Instagram"><svg viewbox="0 0 24 24"><defs><radialgradient cx="30%" cy="107%" id="instaGrad" r="150%"><stop offset="0%" stop-color="#fdf497"></stop><stop offset="5%" stop-color="#fdf497"></stop><stop offset="45%" stop-color="#fd5949"></stop><stop offset="60%" stop-color="#d6249f"></stop><stop offset="90%" stop-color="#285AEB"></stop></radialgradient></defs><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" fill="url(#instaGrad)"></path></svg></a><a class="social-icon brand-youtube" href="https://youtube.com" target="_blank" title="YouTube"><svg viewbox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" fill="#FF0000"></path><path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#FFFFFF"></path></svg></a></div></div>
+<div class="top-section">
+<!-- کپسول لوکیشن اضافه شده در محل مورد نظر -->
+<div class="location-badge">
+<svg viewbox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+<span>Tabriz</span>
+</div>
+<div class="profile-container">
+<div class="profile-avatar">
+<svg fill="#38bdf8" height="54" opacity="0.85" viewbox="0 0 24 24" width="54"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+</div>
+<div class="profile-title">[𝐏𝐫𝐨𝐠𝐫𝐚𝐦𝐦𝐞𝐫]</div>
+</div><div class="tech-stack-container" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 320px; z-index: 10;"><style>.tech-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: #38bdf8; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(56, 189, 248, 0.35); box-shadow: 0 0 10px rgba(56, 189, 248, 0.15), inset 0 0 8px rgba(56, 189, 248, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: default; } .tech-pill:hover { transform: translateY(-2px) scale(1.05); border-color: rgba(168, 85, 247, 0.8); color: #c084fc; box-shadow: 0 0 16px rgba(168, 85, 247, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2); background: rgba(30, 27, 75, 0.6); } .tech-pill svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }</style><div class="tech-pill"><svg viewbox="0 0 24 24"><path d="M3 3h18v18H3V3zm15.5 13.5c0-1.9-.9-2.8-2.6-3.5l-.8-.3c-.8-.3-1.1-.6-1.1-1.1 0-.6.5-1 1.2-1 .8 0 1.2.4 1.3 1.2h1.8c-.1-1.8-1.3-2.7-3.1-2.7-1.8 0-3.1 1-3.1 2.6 0 1.7.9 2.5 2.5 3.1l.8.3c.9.4 1.3.7 1.3 1.3 0 .7-.6 1.1-1.4 1.1-.9 0-1.5-.5-1.6-1.5h-1.9c.1 1.9 1.4 3 3.5 3 2.1 0 3.4-1.1 3.4-2.9zm-7.6-.1V10.2H9v4.2c0 .9-.4 1.3-1.2 1.3-.7 0-1-.3-1.2-.8H4.7c.2 1.8 1.4 2.6 3.1 2.6 2 0 3.1-1 3.1-2.9z"></path></svg><span>JavaScript</span></div><div class="tech-pill"><svg viewbox="0 0 24 24"><path d="M11.9 2C6.7 2 7 4.3 7 4.3l.01 2.4h5v.7H5S2 7.1 2 12.3s2.6 5 2.6 5h1.5v-2.1c0-2.4 2.1-2.3 2.1-2.3h5.1c2 0 2.2-2 2.2-2V4.3S15.9 2 11.9 2zm-2.7 1.8c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2.9 18.2c5.2 0 4.9-2.3 4.9-2.3l-.01-2.4h-5v-.7H19s3 .3 3-4.9-2.6-5-2.6-5h-1.5v2.1c0 2.4-2.1 2.3-2.1 2.3H7.7c-2 0-2.2 2-2.2 2v4.6s-.4 2.3 3.6 2.3zm2.7-1.8c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1z"></path></svg><span>Python</span></div><div class="tech-pill"><svg viewbox="0 0 24 24"><path d="M12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zm0-7.5C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm6.7 13.9c-.8 1.4-2.4 2.2-4.1 2.5-1.5.3-3.2.1-4.7-.6-1.5-.7-2.7-1.9-3.4-3.3-.7-1.4-.8-3-.3-4.5.5-1.5 1.5-2.7 2.8-3.5 1.4-.8 3-1.1 4.6-.9 1.6.2 3.1.9 4.3 2.1 1.2 1.2 1.8 2.7 1.8 4.3 0 1.4-.4 2.7-1 3.9z"></path></svg><span>React</span></div><div class="tech-pill"><svg viewbox="0 0 24 24"><path d="M3 2l1.6 18 7.4 2 7.4-2L21 2H3zm14.3 5.4H8.7l.2 2.5h8.2l-.6 6.9-4.5 1.2-4.5-1.2-.3-3.4h2.4l.2 1.6 2.2.6 2.2-.6.2-2.7H6.7L6 5h11.5l-.2 2.4z"></path></svg><span>HTML5 / CSS3</span></div><div class="tech-pill"><svg viewbox="0 0 24 24"><path d="M12 2L3 7.2v10.3L12 22l9-4.5V7.2L12 2zm-1 16.3l-5.6-2.8V9.1L11 12v6.3zm2 0V12l5.6-2.9v6.4L13 18.3zM12 4.1l5.4 3.1-5.4 2.8-5.4-2.8L12 4.1z"></path></svg><span>Node.js</span></div><div class="tech-pill"><svg viewbox="0 0 24 24"><path d="M21.6 10.9L13.1 2.4a1.7 1.7 0 00-2.4 0L8.3 4.8l3 3a1.9 1.9 0 012.3 2.4l2.9 2.9a1.9 1.9 0 011.6 2.5 1.9 1.9 0 01-2.5-1.6l-2.8-2.8v4.3a1.9 1.9 0 11-1.8 0v-4.5a1.9 1.9 0 01-1-2.5l-3-3L2.4 10.9a1.7 1.7 0 000 2.4l8.5 8.5a1.7 1.7 0 002.4 0l8.3-8.5a1.7 1.7 0 000-2.4z"></path></svg><span>Git</span></div></div>
+<div class="wave-container">
+<div class="wave-text" id="waveText">
+<span class="letter">R</span>
+<span class="letter">I</span>
+<span class="letter">M</span>
+<span class="letter">A</span>
+</div>
+</div>
+</div>
+<div class="music-player">
+<div class="player-controls">
+<div class="control-btn" id="playBtn" onclick="togglePlay()">
+<svg id="playIcon" viewbox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
+</div>
+<div class="control-btn" onclick="nextTrack()" title="Next Track">
+<svg viewbox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
+</div>
+</div>
+<div class="track-info">
+<div class="track-details">
+<div class="track-title-wrapper">
+<span id="trackTitle">Music 1</span>
+<div class="equalizer active" id="equalizer">
+<span class="eq-bar"></span>
+<span class="eq-bar"></span>
+<span class="eq-bar"></span>
+<span class="eq-bar"></span>
+<span class="eq-bar"></span>
+</div>
+</div>
+<span id="timeDisplay">0:00 / 0:00</span>
+</div>
+<div class="progress-bar" id="progressBar" onclick="seekAudio(event)">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+</div>
+<div class="volume-container" id="volumeContainer"><button class="control-btn" id="volumeBtn" onclick="toggleMute()" title="Mute / Unmute"><svg id="volumeIcon" viewbox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg></button><div class="volume-slider-wrapper"><input aria-label="Volume Control" class="volume-slider" id="volumeSlider" max="1" min="0" oninput="onVolumeChange(event)" step="0.01" type="range" value="0.8"/></div></div></div>
+</div><script>
+  (function initVolumeControls() {
+    const audio = document.getElementById('audioPlayer');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeIcon = document.getElementById('volumeIcon');
+    let lastVolume = 0.8;
+
+    if (audio) {
+      audio.volume = 0.8;
+    }
+
+    function updateSliderGradient(val) {
+      const percent = val * 100;
+      volumeSlider.style.background = `linear-gradient(to right, #38bdf8 0%, #a855f7 ${percent}%, rgba(56, 189, 248, 0.2) ${percent}%, rgba(56, 189, 248, 0.2) 100%)`;
+    }
+
+    function updateVolumeIcon(vol) {
+      if (vol === 0) {
+        // Muted
+        volumeIcon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27l4.73 4.73H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+      } else if (vol < 0.5) {
+        // Low volume
+        volumeIcon.innerHTML = '<path d="M7 9v6h4l5 5V4L11 9H7z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+      } else {
+        // High volume
+        volumeIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+      }
+    }
+
+    window.onVolumeChange = function(e) {
+      const val = parseFloat(e.target.value);
+      if (audio) audio.volume = val;
+      if (val > 0) lastVolume = val;
+      updateVolumeIcon(val);
+      updateSliderGradient(val);
+    };
+
+    window.toggleMute = function() {
+      if (!audio) return;
+      if (audio.volume > 0) {
+        lastVolume = audio.volume;
+        audio.volume = 0;
+        volumeSlider.value = 0;
+        updateVolumeIcon(0);
+        updateSliderGradient(0);
+      } else {
+        const restoreVol = lastVolume > 0 ? lastVolume : 0.8;
+        audio.volume = restoreVol;
+        volumeSlider.value = restoreVol;
+        updateVolumeIcon(restoreVol);
+        updateSliderGradient(restoreVol);
+      }
+    };
+
+    updateSliderGradient(0.8);
+  })();
+</script>
+<audio id="audioPlayer" preload="auto"></audio>
+<script>
+    // سیستم ذرات تعاملی پس‌زمینه (Interactive Background Particles) با ترکیب نئون آبی و بنفش
+    const canvas = document.getElementById('particlesCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const particleCount = 55;
+    const maxDistance = 110;
+    const mouse = { x: null, y: null, radius: 130 };
+
+    // پالت رنگ‌های نئونی ترکیبی (Cyan & Purple/Magenta)
+    const colorThemes = [
+      { r: 56, g: 189, b: 248, hex: '#38bdf8' },  // Neon Sky Cyan
+      { r: 6, g: 182, b: 212, hex: '#06b6d4' },   // Neon Turquoise
+      { r: 168, g: 85, b: 247, hex: '#a855f7' },  // Neon Purple
+      { r: 192, g: 132, b: 252, hex: '#c084fc' }  // Neon Bright Magenta/Violet
+    ];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    window.addEventListener('mouseout', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.baseX = this.x;
+        this.baseY = this.y;
+        this.vx = (Math.random() - 0.5) * 0.7;
+        this.vy = (Math.random() - 0.5) * 0.7;
+        this.opacity = Math.random() * 0.6 + 0.3;
+        this.color = colorThemes[Math.floor(Math.random() * colorThemes.length)];
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.opacity})`;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color.hex;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+        // واکنش ملایم به ماوس
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < mouse.radius) {
+            const force = (mouse.radius - dist) / mouse.radius;
+            const dirX = dx / dist;
+            const dirY = dirX ? dirX : 0;
+            const dirYActual = dy / dist;
+            this.x -= dirX * force * 1.5;
+            this.y -= dirYActual * force * 1.5;
+          }
+        }
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+    initParticles();
+
+    function connectParticles() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const p1 = particles[i];
+          const p2 = particles[j];
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxDistance) {
+            const lineOpacity = (1 - dist / maxDistance) * 0.28;
+            const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+            grad.addColorStop(0, `rgba(${p1.color.r}, ${p1.color.g}, ${p1.color.b}, ${lineOpacity})`);
+            grad.addColorStop(1, `rgba(${p2.color.r}, ${p2.color.g}, ${p2.color.b}, ${lineOpacity})`);
+
+            ctx.beginPath();
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 1;
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function renderParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.update();
+        p.draw();
+      });
+      connectParticles();
+      requestAnimationFrame(renderParticles);
+    }
+    renderParticles();
+
+    // انیمیشن متن RIMA
+    const letters = document.querySelectorAll('.letter');
+    let time = 0;
+
+    function animate() {
+      time += 0.04;
+      letters.forEach((letter, index) => {
+        const yOffset = Math.sin(time + index * 0.8) * 20;
+        const rotate = Math.cos(time + index * 0.8) * 8;
+        letter.style.transform = `translateY(${yOffset}px) rotate(${rotate}deg)`;
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    const playlist = [
+      { name: "Music 1", src: "" },
+      { name: "Music 2", src: "" },
+      { name: "Music 3", src: "" }
+    ];
+
+    let currentTrackIndex = 0;
+    const audio = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const progressBar = document.getElementById('progressBar');
+    const trackTitle = document.getElementById('trackTitle');
+    const welcomeOverlay = document.getElementById('welcomeOverlay');
+    const equalizer = document.getElementById('equalizer');
+
+    let isPlaying = true;
+
+    function setEqualizerState(active) {
+      if (active) {
+        equalizer.classList.add('active');
+      } else {
+        equalizer.classList.remove('active');
+      }
+    }
+
+    function loadTrack(index) {
+      audio.src = playlist[index].src;
+      trackTitle.textContent = playlist[index].name;
+    }
+
+    loadTrack(currentTrackIndex);
+
+    function startSite() {
+      welcomeOverlay.classList.add('fade-out');
+      setTimeout(() => {
+        welcomeOverlay.style.display = 'none';
+      }, 1500);
+      isPlaying = true;
+      setEqualizerState(true);
+      playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        isPlaying = false;
+        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        setEqualizerState(false);
+      } else {
+        isPlaying = true;
+        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        setEqualizerState(true);
+      }
+    }
+
+    function nextTrack() {
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      loadTrack(currentTrackIndex);
+      isPlaying = true;
+      playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      setEqualizerState(true);
+    }
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = percent + '%';
+        timeDisplay.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+      }
+    });
+
+    function seekAudio(e) {
+      if (!audio.duration) return;
+      const rect = progressBar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      audio.currentTime = (clickX / width) * audio.duration;
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }
+
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    document.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+  </script>
+</body></html>
